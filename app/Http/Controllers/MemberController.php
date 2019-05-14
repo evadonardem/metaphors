@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Person;
+use App\Models\Member;
 use Illuminate\Http\Request;
+use Redirect;
+use Validator;
 
 class MemberController extends Controller {
 
@@ -13,7 +17,7 @@ class MemberController extends Controller {
 	 */
 	public function index()
 	{
-		return View::make('members.master-list');
+		return view('members.master-list');
 	}
 
 	/**
@@ -23,7 +27,7 @@ class MemberController extends Controller {
 	 */
 	public function create()
 	{
-		return View::make('members.register');
+		return view('members.register');
 	}
 
 	/**
@@ -31,27 +35,27 @@ class MemberController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(Request $request)
 	{
 		$person = array(
-			'firstName' => Input::get('firstName'),
-			'middleName' => Input::get('middleName'),
-			'lastName' => Input::get('lastName'),
-			'gender' => Input::get('gender')
+			'firstName' => $request->input('firstName'),
+			'middleName' => $request->input('middleName'),
+			'lastName' => $request->input('lastName'),
+			'gender' => substr($request->input('gender'), 0, 1)
 		);
 
 		$person = Person::create($person);
 
 		$member = new Member(
 			array(
-				'code' => Input::get('memberCode'),
-				'date_of_registration' => Input::get('dateOfRegistration')
+				'code' => $request->input('memberCode'),
+				'date_of_registration' => $request->input('dateOfRegistration')
 			)
 		);
 		$person->member()->save($member);
 
 		$member = $person->member;
-		$sponsor = Member::where('code', '=', Input::get('sponsorCode'))->first();
+		$sponsor = Member::where('code', '=', $request->input('sponsorCode'))->first();
 		if(is_object($sponsor)) {
 			$member->sponsors()->attach($sponsor->code);
 		}
@@ -116,9 +120,9 @@ class MemberController extends Controller {
 	}
 
 
-	public function isUniqueMemberCode() {
+	public function isUniqueMemberCode(Request $request) {
 		$validator = Validator::make(
-			array('code' => Input::get('code')),
+			array('code' => $request->input('code')),
 			array('code' => array('required', 'unique:member'))
 		);
 		echo !$validator->fails();
@@ -126,7 +130,7 @@ class MemberController extends Controller {
 
 	public function downlines($memberCode) {
 		$member = Member::find($memberCode);
-		return View::make('members.downlines', array('member' => $member));
+		return view('members.downlines', array('member' => $member));
 	}
 	public function downlinesJSON($memberCode) {
 		$member = Member::find($memberCode);
@@ -174,12 +178,12 @@ class MemberController extends Controller {
 
 	public function purchaseOrder($memberCode) {
 		$member = Member::find($memberCode);
-		return View::make('members.purchase-order', array('member' => $member));
+		return view('members.purchase-order', array('member' => $member));
 	}
 
 	public function addPurchaseOrder($memberCode) {
 		$member = Member::find($memberCode);
-		$purchaseOrderDate = Input::get('purchaseOrderDate');
+		$purchaseOrderDate = $request->input('purchaseOrderDate');
 
 		// deny adding purchase order if payout was already created
 		$payout = Payout::where('payout_from', '<=', $purchaseOrderDate)
@@ -195,7 +199,7 @@ class MemberController extends Controller {
 		$purchaseOrder = PurchaseOrder::find($purchaseOrderCode);
 
 		// attach products to the newly created purchase order
-		$purchaseOrderProducts = Input::get('purchaseOrderProducts');
+		$purchaseOrderProducts = $request->input('purchaseOrderProducts');
 		foreach($purchaseOrderProducts as $purchaseOrderProduct) {
 			$productCode = $purchaseOrderProduct[0];
 			$productPrice = $purchaseOrderProduct[1];
@@ -207,7 +211,7 @@ class MemberController extends Controller {
 
 	public function purchaseOrders($memberCode) {
 		$member = Member::find($memberCode);
-		return View::make('members.purchase-orders', array('member' => $member));
+		return view('members.purchase-orders', array('member' => $member));
 	}
 
 	public function purchaseOrdersJSON($memberCode) {

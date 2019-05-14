@@ -16,6 +16,6 @@ class Person extends Model {
 	);
 
 	public function member() {
-		return $this->hasOne('Member');
+		return $this->hasOne('App\Models\Member');
 	}
 }

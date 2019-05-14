@@ -15,11 +15,11 @@ class Member extends Model {
 	);
 
 	public function person() {
-		return $this->belongsTo('Person');
+		return $this->belongsTo('App\Models\Person');
 	}
 
 	public function sponsors() {
-		return $this->belongsToMany('Member', 'member_downline', 'member_code', 'sponsor_code')
+		return $this->belongsToMany('App\Models\Member', 'member_downline', 'member_code', 'sponsor_code')
 		->withTimestamps();
 	}
 
@@ -28,11 +28,11 @@ class Member extends Model {
 	}
 
 	public function downlines() {
-		return $this->belongsToMany('Member', 'member_downline', 'sponsor_code', 'member_code')
+		return $this->belongsToMany('App\Models\Member', 'member_downline', 'sponsor_code', 'member_code')
 		->withTimestamps();
 	}
 
 	public function purchaseOrders() {
-		return $this->hasMany('PurchaseOrder', 'member_code');
+		return $this->hasMany('App\Models\PurchaseOrder', 'member_code');
 	}
 }

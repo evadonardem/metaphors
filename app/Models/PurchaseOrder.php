@@ -15,11 +15,11 @@ class PurchaseOrder extends Model {
 	);
 
 	public function member() {
-		return $this->belongsTo('Member');
+		return $this->belongsTo('App\Models\Member');
 	}
 
 	public function products() {
-		return $this->belongsToMany('Product', 'purchase_order_product', 'purchase_order_code', 'product_code')
+		return $this->belongsToMany('App\Models\Product', 'purchase_order_product', 'purchase_order_code', 'product_code')
 		->withPivot('price', 'quantity')
 		->withTimestamps();
 	}
