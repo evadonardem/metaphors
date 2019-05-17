@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class ProductController extends Controller {
 
@@ -13,7 +14,7 @@ class ProductController extends Controller {
 	 */
 	public function index()
 	{
-		return View::make('products.master-list');
+		return view('products.master-list');
 	}
 
 	/**
@@ -102,7 +103,7 @@ class ProductController extends Controller {
 	}
 
 	public function productsJSON() {
-		$products = DB::table('product')->orderBy('title', 'asc')->get();
-		return Response::json($products);
+		$products = Product::orderBy('title', 'asc')->get();
+		return response()->json($products);
 	}
 }
