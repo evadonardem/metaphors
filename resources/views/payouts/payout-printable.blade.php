@@ -6,7 +6,7 @@ Payout Report | From: {{ $duration['from']->format('Y-M-d') }} To: {{ $duration[
 
 @section('content')
 <h1 class="text-center">Payout Report<br>
-	<small>From: {{ $duration['from']->format('Y-M-d') }} 
+	<small>From: {{ $duration['from']->format('Y-M-d') }}
 	To: {{ $duration['to']->format('Y-M-d') }}</small></h1>
 <p>This report was generated on {{ date('Y-M-d h:i:s A') }}.</p>
 <div id="payoutWrapper"></div>
@@ -16,16 +16,16 @@ Payout Report | From: {{ $duration['from']->format('Y-M-d') }} To: {{ $duration[
 <script type="text/javascript">
 $('#payoutWrapper').html('<p><i class="fa fa-user"></i></p>');
 $(function() {
-	var url = '{{ url() }}/payouts/{{ $duration['from']->format('Y-m-d') }}/{{ $duration['to']->format('Y-m-d') }}/json';
+	var url = '{{ url("payouts/".$duration["from"]->format("Y-m-d")."/".$duration["to"]->format("Y-m-d")."/json") }}';
 	var source = {
 		datatype: "json",
 		datafields: [
-			{ name: 'tree' }					
+			{ name: 'tree' }
 		],
 		url: url
 	};
-	var dataAdapter = new $.jqx.dataAdapter(source, { 
-		loadComplete : function(records) {	
+	var dataAdapter = new $.jqx.dataAdapter(source, {
+		loadComplete : function(records) {
 			var forest = records;
 
 			var membersWithOverrideCommission = [];
@@ -33,7 +33,7 @@ $(function() {
 				var record = records[i];
 				var tree = record.tree;
 
-				// fetched member at level 0 
+				// fetched member at level 0
 				var member = tree[0][0];
 
 				membersWithOverrideCommission.push({
@@ -63,7 +63,7 @@ $(function() {
 				var masterGridSource = {
 					datatype: "json",
 					datafields: [
-						{ name: 'id' },	
+						{ name: 'id' },
 						{ name: 'code' },
 						{ name: 'firstName'},
 						{ name: 'middleName'},
@@ -86,7 +86,7 @@ $(function() {
 					localdata: membersWithOverrideCommission
 				};
 				var masterGridDataAdapter = new $.jqx.dataAdapter(masterGridSource, {
-					loadComplete: function(records) {						
+					loadComplete: function(records) {
 						var table = '<table class="table table-striped table-bordered table-condensed" width="100%">';
 							table += '<thead>';
 							table += '<tr>';
@@ -118,10 +118,10 @@ $(function() {
 							table += '</thead>';
 
 						var summationTotalQuantity = 0;
-						
+
 						var summationTotalQuantityLevel1 = 0;
 						var summationTotalOverrideCommissionLevel1 = 0;
-						
+
 						var summationTotalQuantityLevel2 = 0;
 						var summationTotalOverrideCommissionLevel2 = 0;
 
@@ -133,7 +133,7 @@ $(function() {
 
 						var summationTotalQuantityLevel5 = 0;
 						var summationTotalOverrideCommissionLevel5 = 0;
-						
+
 						var summationTotalOverrideCommission = 0;
 						table += '<tbody>';
 						for(j in records) {
@@ -147,22 +147,22 @@ $(function() {
 
 							summationTotalQuantity += member.quantity;
 							table += '<td align="right">' + member.quantity + '</td>';
-							
+
 							summationTotalQuantityLevel1 += member.totalQuantityLevel1;
 							table += '<td align="right">' + member.totalQuantityLevel1 + '</td>';
 
 							summationTotalOverrideCommissionLevel1 += member.totalOverrideCommissionLevel1;
 							table += '<td align="right">' + $.number(member.totalOverrideCommissionLevel1, 2) + '</td>';
-							
+
 							summationTotalQuantityLevel2 += member.totalQuantityLevel2;
 							table += '<td align="right">' + member.totalQuantityLevel2 + '</td>';
-							
+
 							summationTotalOverrideCommissionLevel2 += member.totalOverrideCommissionLevel2;
 							table += '<td align="right">' + $.number(member.totalOverrideCommissionLevel2, 2) + '</td>';
-							
+
 							summationTotalQuantityLevel3 += member.totalQuantityLevel3;
 							table += '<td align="right">' + member.totalQuantityLevel3 + '</td>';
-							
+
 							summationTotalOverrideCommissionLevel3 += member.totalOverrideCommissionLevel3;
 							table += '<td align="right">' + $.number(member.totalOverrideCommissionLevel3, 2) + '</td>';
 
@@ -171,16 +171,16 @@ $(function() {
 
 							summationTotalOverrideCommissionLevel4 += member.totalOverrideCommissionLevel4;
 							table += '<td align="right">' + $.number(member.totalOverrideCommissionLevel4, 2) + '</td>';
-							
+
 							summationTotalQuantityLevel5 += member.totalQuantityLevel5;
 							table += '<td align="right">' + member.totalQuantityLevel5 + '</td>';
 
 							summationTotalOverrideCommissionLevel5 += member.totalOverrideCommissionLevel5;
 							table += '<td align="right">' + $.number(member.totalOverrideCommissionLevel5, 2) + '</td>';
-							
+
 							summationTotalOverrideCommission += member.totalOverrideCommission;
 							table += '<td align="right">' + $.number(member.totalOverrideCommission, 2) + '</td>';
-							
+
 							table += '</tr>';
 						}
 						table += '</tbody>';
@@ -201,7 +201,7 @@ $(function() {
 						table += '<td align="right"><strong>' + $.number(summationTotalOverrideCommission, 2) + '</strong></td>';
 						table += '</tfoot>';
 
-						table += '</table>';						
+						table += '</table>';
 
 						$('#payoutWrapper').append(table);
 						$('#payoutWrapper').append($('<hr class="page-break"/>'));
@@ -210,7 +210,7 @@ $(function() {
 						for(x in forest) {
 							var tree = forest[x].tree;
 							var member = tree[0][0];
-							
+
 							if(member.totalOverrideCommission<=0) continue;
 
 							memberWithOverrideCommissionDetails.append($('<p/>').html('<b>' + member.code + ' ' + member.lastName + ', ' + member.firstName + ' ' + member.middleName.substr(0, 1) + '.</b>'));
@@ -232,9 +232,9 @@ $(function() {
 									table += '<th>Gender</th>';
 									table += '<th>Qty.</th>';
 									table += '<th>Commission</th>';
-									table += '</tr>';									
+									table += '</tr>';
 									table += '</thead>';
-								
+
 								table += '<tbody>';
 								for(z in level) {
 									downline = level[z];
@@ -264,13 +264,13 @@ $(function() {
 
 								table += '</table>';
 
-								memberWithOverrideCommissionDetails.append(table);								
+								memberWithOverrideCommissionDetails.append(table);
 							}
 
 							memberWithOverrideCommissionDetails.append($('<hr class="page-break"/>'));
 						}
 
-						$('#payoutWrapper').append(memberWithOverrideCommissionDetails);						
+						$('#payoutWrapper').append(memberWithOverrideCommissionDetails);
 					}
 				});
 				masterGridDataAdapter.dataBind();

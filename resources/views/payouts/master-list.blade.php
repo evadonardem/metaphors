@@ -8,13 +8,13 @@ Products | Metaphors
 @stop
 
 @section('content')
-<div class="well"> 
+<div class="well">
 	<h1 class="text-primary"><span class="glyphicon glyphicon-gift"></span> Payouts</h1>
 	<div class="row">
 		<div class="col-md-7">
 			<div class="panel panel-default">
 				<div class="panel-heading">Payouts Master-List</div>
-				<div class="panel-body">					
+				<div class="panel-body">
 					<div id="payoutsGrid"></div>
 				</div>
 			</div>
@@ -31,38 +31,38 @@ Products | Metaphors
 						<div class="col-md-3"><label>Year:</label></div>
 						<div class="col-md-9"><div id="payoutYear"></div></div>
 					</div><br>
-					<p class="alert alert-warning"><strong>NOTE:</strong> 
-						Make it sure that all purchases was entered before creating 
-						payout for the selected month/year. Once payout was created 
+					<p class="alert alert-warning"><strong>NOTE:</strong>
+						Make it sure that all purchases was entered before creating
+						payout for the selected month/year. Once payout was created
 						adding purchases will not be possible.</p>
-					{{ Form::token() }}	
+					{{ Form::token() }}
 					{{ Form::button('Create', array('id' => 'createPayoutBtn', 'class' => 'btn btn-primary btn-block')) }}
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="well">		
-		<div class="text-right">			
+	<div class="well">
+		<div class="text-right">
 			<button id="qualifiedMembersPayoutPrintableVersionBtn" class="btn btn-primary">
 				<span class="glyphicon glyphicon-new-window"></span> View Printable Version</button>
-		</div>		
+		</div>
 		<h2 class="text-info">Qualified Members</h2>
 		<p>Payout from <sub>(YYYY-MM-DD)</sub>: <span id="payoutFrom" class="badge"></span> | to <sub>(YYYY-MM-DD)</sub>: <span id="payoutTo" class="badge"></span></p>
 		<div id="payoutMasterGridWrapper"></div>
 	</div>
 	<div class="well">
 		<div id="memberWithPayoutDetail"></div>
-		<div id="payoutMasterGridDetailWrapper"></div>			
-	</div> 
+		<div id="payoutMasterGridDetailWrapper"></div>
+	</div>
 </div>
 @stop
 
 @section('embedded_script')
 <script type="text/javascript">
-$(function() { 
-	var grid = $('#payoutsGrid');	
-	var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');	
+$(function() {
+	var grid = $('#payoutsGrid');
+	var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
 	$('#payoutMonth').jqxDropDownList({ height: 20, selectedIndex: {{ date('m') - 1 }}, source: months, width: '100%' });
 	$('#payoutYear').jqxMaskedInput({ height: 20, mask : '####', width: '100%' }).val('{{ date('Y') }}');
 	$('#createPayoutBtn').on('click', function() {
@@ -84,37 +84,37 @@ $(function() {
 		var payout_from = payoutFrom.getFullYear()+'-'+(payoutFrom.getMonth()+1)+'-'+payoutFrom.getDate();
 		var payout_to = payoutTo.getFullYear()+'-'+(payoutTo.getMonth()+1)+'-'+payoutTo.getDate();
 		var _token = $('input[name="_token"]').val();
-		
-		var url = '{{ URL::route("payouts-store") }}';			
+
+		var url = '{{ url("payouts/store") }}';
 		$.post(url, { payout_from : payout_from, payout_to : payout_to, _token : _token }, function(data) {
-			grid.jqxGrid('updatebounddata');					
+			grid.jqxGrid('updatebounddata');
 		});
 	});
-		
+
 	grid.jqxGrid({
-		autoHeight: true,		
+		autoHeight: true,
 		source: payoutsDataAdapter(),
 		columns: [
 			{ text: 'From', datafield: 'payout_from', width: '50%' },
 			{ text: 'To', datafield: 'payout_to', width: '50%' }
 		],
-		pageable: true,		
-		width: '100%',		
-	});	
+		pageable: true,
+		width: '100%',
+	});
 	grid.jqxGrid('selectedrowindex', 0);
 	grid.on('rowselect initialized', function(event) {
 		var args = event.args;
 		var row = args.rowindex;
-		var data = grid.jqxGrid('getrowdata', row);		
-		
-		$('#payoutFrom').html(data.payout_from);
-		$('#payoutTo').html(data.payout_to);
-
-		payoutReport(data.payout_from, data.payout_to);
-	});	 
+		var data = grid.jqxGrid('getrowdata', row);
+		if (data) {
+			$('#payoutFrom').html(data.payout_from);
+			$('#payoutTo').html(data.payout_to);
+			payoutReport(data.payout_from, data.payout_to);
+		}
+	});
 });
-function payoutsDataAdapter() { 
-	var url = '{{ URL::route("payouts-json") }}';
+function payoutsDataAdapter() {
+	var url = '{{ url("payouts/json") }}';
 	var source = {
 		datatype: "json",
 		datafields: [
@@ -125,18 +125,18 @@ function payoutsDataAdapter() {
 		id: 'id',
 		url: url
 	};
-	return new $.jqx.dataAdapter(source); 
+	return new $.jqx.dataAdapter(source);
 }
-function payoutReport(payoutFrom, payoutTo) { 
+function payoutReport(payoutFrom, payoutTo) {
 	$('#payoutMasterGridWrapper').html('<p><em>Loading...</em></p>');
 	$('#memberWithPayoutDetail').html('');
 	$('#payoutMasterGridDetailWrapper').html('');
 
-	var url = '{{ url() }}/payouts/'+payoutFrom+'/'+payoutTo+'/json';	
+	var url = '{{ url("payouts") }}/'+payoutFrom+'/'+payoutTo+'/json';
 	var source = {
 		datatype: "json",
 		datafields: [
-			{ name: 'tree' }					
+			{ name: 'tree' }
 		],
 		url: url
 	};
@@ -153,7 +153,7 @@ function payoutReport(payoutFrom, payoutTo) {
 				var record = records[i];
 				var tree = record.tree;
 
-				// fetched member at level 0 
+				// fetched member at level 0
 				var member = tree[0][0];
 
 				membersWithOverrideCommission.push({
@@ -182,7 +182,7 @@ function payoutReport(payoutFrom, payoutTo) {
 				var masterGridSource = {
 					datatype: "json",
 					datafields: [
-						{ name: 'id' },	
+						{ name: 'id' },
 						{ name: 'code' },
 						{ name: 'firstName'},
 						{ name: 'middleName'},
@@ -204,9 +204,9 @@ function payoutReport(payoutFrom, payoutTo) {
 					id: 'id',
 					localdata: membersWithOverrideCommission
 				};
-				
+
 				var masterGridDataAdapter = new $.jqx.dataAdapter(masterGridSource, {
-					loadComplete: function(records) {												
+					loadComplete: function(records) {
 						// load master detail grid
 						$('#payoutMasterGridDetailWrapper').html('<p><em>Loading...</em></p>');
 						masterGrid.on('rowselect', function(event) {
@@ -218,13 +218,13 @@ function payoutReport(payoutFrom, payoutTo) {
 							for(i in tree) {
 								// root or parent
 								if(i==0) {
-									$('#memberWithPayoutDetail').html('');									
+									$('#memberWithPayoutDetail').html('');
 									var container = $('<div class="well"></div>');
 									var parentMemberDetail = $('<h2 class="text-info">'+parentMember.code+' '+parentMember.lastName+', '+parentMember.firstName+' '+((parentMember.middleName.length>0) ? parentMember.middleName.substr(0,1) + "." : null)+'</h2>');
 									var parentMemberTotalCommission = $('<p>Total Override Commission from Downlines: <span class="badge">'+($.number(parentMember.totalOverrideCommission, 2))+'</span></p>');
 									container.append(parentMemberDetail);
 									container.append(parentMemberTotalCommission);
-									$('#memberWithPayoutDetail').append(container);									
+									$('#memberWithPayoutDetail').append(container);
 									continue;
 								}
 
@@ -249,7 +249,7 @@ function payoutReport(payoutFrom, payoutTo) {
 
 								var masterGridDetailSource = {
 									datatype: "json",
-									datafields: [										
+									datafields: [
 										{ name: 'code' },
 										{ name: 'firstName'},
 										{ name: 'middleName'},
@@ -261,7 +261,7 @@ function payoutReport(payoutFrom, payoutTo) {
 									id: 'code',
 									localdata: downlines
 								};
-								
+
 								var masterGridDetailDataAdapter = new $.jqx.dataAdapter(masterGridDetailSource);
 
 								masterGridDetail.jqxGrid({
@@ -272,13 +272,13 @@ function payoutReport(payoutFrom, payoutTo) {
 										{ text: 'First Name', datafield: 'firstName', width: '12%', pinned: true },
 										{ text: 'Middle Name', datafield: 'middleName', width: '12%', pinned: true },
 										{ text: 'Gender', datafield: 'gender', width: '32px', pinned: true },
-										{ text: 'Quantity', datafield: 'quantity', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+										{ text: 'Quantity', datafield: 'quantity', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 											aggregatesrenderer: function(aggregates) {
 												var value = aggregates['sum'];
 												return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 											}
 										},
-										{ text: 'Commission', datafield: 'overrideCommission', cellsalign: 'right', cellsformat: 'd2', aggregates: ['sum'], 
+										{ text: 'Commission', datafield: 'overrideCommission', cellsalign: 'right', cellsformat: 'd2', aggregates: ['sum'],
 											aggregatesrenderer: function(aggregates) {
 												var value = aggregates['sum'];
 												return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
@@ -298,80 +298,80 @@ function payoutReport(payoutFrom, payoutTo) {
 				});
 
 				masterGrid.jqxGrid({
-					autoHeight: true,				
+					autoHeight: true,
 					columns: [
 						{ text: 'Code', datafield: 'code', width: '90px', pinned: true },
 						{ text: 'Last Name', datafield: 'lastName', width: '12%', pinned: true },
 						{ text: 'First Name', datafield: 'firstName', width: '12%', pinned: true },
 						{ text: 'Middle Name', datafield: 'middleName', width: '12%', pinned: true },
 						{ text: 'Gender', datafield: 'gender', width: '32px', pinned: true },
-						{ text: 'Quantity', datafield: 'quantity', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', datafield: 'quantity', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Quantity', columngroup: 'level1', datafield: 'totalQuantityLevel1', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', columngroup: 'level1', datafield: 'totalQuantityLevel1', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Commission', columngroup: 'level1', datafield: 'totalOverrideCommissionLevel1', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'], 
+						{ text: 'Commission', columngroup: 'level1', datafield: 'totalOverrideCommissionLevel1', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Quantity', columngroup: 'level2', datafield: 'totalQuantityLevel2', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', columngroup: 'level2', datafield: 'totalQuantityLevel2', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Commission', columngroup: 'level2', datafield: 'totalOverrideCommissionLevel2', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'], 
+						{ text: 'Commission', columngroup: 'level2', datafield: 'totalOverrideCommissionLevel2', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Quantity', columngroup: 'level3', datafield: 'totalQuantityLevel3', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', columngroup: 'level3', datafield: 'totalQuantityLevel3', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Commission', columngroup: 'level3', datafield: 'totalOverrideCommissionLevel3', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'], 
+						{ text: 'Commission', columngroup: 'level3', datafield: 'totalOverrideCommissionLevel3', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Quantity', columngroup: 'level4', datafield: 'totalQuantityLevel4', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', columngroup: 'level4', datafield: 'totalQuantityLevel4', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Commission', columngroup: 'level4', datafield: 'totalOverrideCommissionLevel4', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'], 
+						{ text: 'Commission', columngroup: 'level4', datafield: 'totalOverrideCommissionLevel4', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Quantity', columngroup: 'level5', datafield: 'totalQuantityLevel5', width: '70px', cellsalign: 'right', aggregates: ['sum'], 
+						{ text: 'Quantity', columngroup: 'level5', datafield: 'totalQuantityLevel5', width: '70px', cellsalign: 'right', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Commission', columngroup: 'level5', datafield: 'totalOverrideCommissionLevel5', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'], 
+						{ text: 'Commission', columngroup: 'level5', datafield: 'totalOverrideCommissionLevel5', cellsalign: 'right', cellsformat: 'd2', width: '90px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
 							}
 						},
-						{ text: 'Total Commission', datafield: 'totalOverrideCommission', cellsalign: 'right', cellsformat: 'd2', width: '125px', aggregates: ['sum'], 
+						{ text: 'Total Commission', datafield: 'totalOverrideCommission', cellsalign: 'right', cellsformat: 'd2', width: '125px', aggregates: ['sum'],
 							aggregatesrenderer: function(aggregates) {
 								var value = aggregates['sum'];
 								return '<div style="float: right; margin: 4px; overflow: hidden;">' + value + '</div>';
@@ -386,7 +386,7 @@ function payoutReport(payoutFrom, payoutTo) {
 						{ text: 'Level 5', align: 'center', name: 'level5' }
 					],
 					filterable: true,
-					pageable: true,	
+					pageable: true,
 					showaggregates: true,
 					showstatusbar: true,
 					source: masterGridDataAdapter,
@@ -397,15 +397,15 @@ function payoutReport(payoutFrom, payoutTo) {
 			} else {
 				masterGrid.html('<p><em>No qualified member(s).</em></p>');
 			}
-			
+
 		}
 	});
 	dataAdapter.dataBind();
 
 	$('#qualifiedMembersPayoutPrintableVersionBtn').unbind('click');
 	$('#qualifiedMembersPayoutPrintableVersionBtn').on('click', function() {
-		window.open('{{ url() }}/payouts/'+payoutFrom+'/'+payoutTo+'/printable', "_blank", "toolbar=no, scrollbars=yes, location=no, menubar=no, status=no, titlebar=no");
-	}); 
+		window.open('{{ url("payouts") }}/'+payoutFrom+'/'+payoutTo+'/printable', "_blank", "toolbar=no, scrollbars=yes, location=no, menubar=no, status=no, titlebar=no");
+	});
 }
 </script>
 @stop

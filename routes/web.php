@@ -32,7 +32,7 @@ Route::group(array('before' => 'auth'), function() {
 			Route::get('/{memberCode}/downlines', array('as' => 'member-downlines', 'uses' => 'MemberController@downlines'));
 			Route::get('/{memberCode}/downlines/json', array('as' => 'member-downlines-json', 'uses' => 'MemberController@downlinesJSON'));
 			Route::get('/{memberCode}/downlines/printable', function($memberCode) {
-				$member = Member::find($memberCode);
+				$member = App\Models\Member::find($memberCode);
 				return View::make('members.downlines-printable', array('member' => $member));
 			});
 

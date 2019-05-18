@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Member;
+use App\Models\Payout;
 
 class PayoutController extends Controller
 {
@@ -14,17 +16,7 @@ class PayoutController extends Controller
      */
     public function index()
     {
-        return View::make('payouts.master-list');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        //
+        return view('payouts.master-list');
     }
 
     /**
@@ -32,61 +24,17 @@ class PayoutController extends Controller
      *
      * @return Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        $payout_from = Input::get('payout_from');
-        $payout_to = Input::get('payout_to');
+        $payout_from = $request->input('payout_from');
+        $payout_to = $request->input('payout_to');
         $payout = Payout::create(array('payout_from' => $payout_from, 'payout_to' => $payout_to));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function update($id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
     public function payoutsJSON()
     {
         $payouts = Payout::orderBy('payout_from', 'desc')->orderBy('payout_to', 'desc')->get();
-        return Response::json($payouts);
+        return response()->json($payouts);
     }
 
     public function payoutJSON($payoutFrom, $payoutTo)
@@ -221,6 +169,6 @@ class PayoutController extends Controller
             }
         }
 
-        return Response::json($forest);
+        return response()->json($forest);
     }
 }

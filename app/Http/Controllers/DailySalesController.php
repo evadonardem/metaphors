@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Models\Product;
+use App\Models\PurchaseOrder;
+
+use Carbon;
+use PDF;
+
 class DailySalesController extends Controller
 {
 
@@ -14,15 +20,15 @@ class DailySalesController extends Controller
      */
     public function index()
     {
-        return View::make('reports.dailysales.index');
+        return view('reports.dailysales.index');
     }
 
     public function dailySalesJSON($start, $end)
     {
-        $interval = new DateInterval('P1D');
+        $interval = new \DateInterval('P1D');
         $start = Carbon\Carbon::parse($start);
         $end = Carbon\Carbon::parse($end);
-        $daterange = new DatePeriod($start, $interval, $end->addDay(1));
+        $daterange = new \DatePeriod($start, $interval, $end->addDay(1));
 
         $dailySales = [];
         foreach ($daterange as $date) {

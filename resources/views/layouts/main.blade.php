@@ -6,13 +6,13 @@
 		<!-- GLOBAL CSS (Start) -->
 		@include('globals.css')
 		<!-- GLOBAL CSS (End) -->
-		
+
 		@yield('embedded_style')
 	</head>
 	<body>
-		@include('layouts.menu')		
+		@include('layouts.menu')
 
-		<div id="content" class="container">			
+		<div id="content" class="container">
 			<div class="row">
 				<div class="col-md-7">
 					@if(Session::has('global'))
@@ -22,7 +22,7 @@
 						</div>
 						<script type="text/javascript">
 						$(function() {
-							$('#globalWindow').jqxWindow({
+							$('#globalWindow').jqxWindow({@include('layouts.banner')
 								isModal: true,
 								width: '350px'
 							});
@@ -34,23 +34,15 @@
 				</div>
 				<div class="col-md-5" style="background: ivory;">
 					@include('layouts.banner')
-					<div class="panel panel-default">
-						<div class="panel-heading">News</div>
-						<div class="panel-body"></div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">Events</div>
-						<div class="panel-body"></div>
-					</div>
 				</div>
-			</div>			
+			</div>
 		</div>
 		<footer>
-			@include('layouts.footer')			
+			@include('layouts.footer')
 			@include('scripts.jqwidgets')
 			@include('scripts.bootstrap')
 			@include('scripts.number')
 			@yield('embedded_script')
 		</footer>
-	</body>	
+	</body>
 </html>

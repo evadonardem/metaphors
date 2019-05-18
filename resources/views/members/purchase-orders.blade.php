@@ -65,7 +65,7 @@ $(function() {
 });
 
 function purchaseOrdersDataAdapter() {
-	var url = "{{ url() }}/member/{{ $member->code }}/purchase-orders/json";
+	var url = "{{ url('member/'.$member->code.'/purchase-orders/json') }}";
 	var source = {
 		datatype: "json",
 		datafields: [
@@ -78,7 +78,7 @@ function purchaseOrdersDataAdapter() {
 	return new $.jqx.dataAdapter(source);
 }
 function purchaseOrderProducts(purchaseOrderCode) {
-	var url = "{{ url() }}/member/purchase-order/"+purchaseOrderCode+"/products/json";
+	var url = "{{ url('member/purchase-order') }}/"+purchaseOrderCode+"/products/json";
 	var source = {
 		datatype: "json",
 		datafields: [
