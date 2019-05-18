@@ -9,25 +9,25 @@ Register | Metaphors
 
 @section('content')
 <div class="well">
-	<h1 class="text-primary">Purchase Order</h1>	
+	<h1 class="text-primary">Purchase Order</h1>
 	<div class="row">
 		<div class="col-md-8">
 			<label>Sold To:</label>
-			<p>[{{ $member->code }}] {{ $member->person->lastName }}, {{ $member->person->firstName }} {{ substr($member->person->middleName,0,1) }}.</p>	
+			<p>[{{ $member->code }}] {{ $member->person->lastName }}, {{ $member->person->firstName }} {{ substr($member->person->middleName,0,1) }}.</p>
 		</div>
 		<div class="col-md-4">
 			<label>P.O. Date:</label>
 			<div id="purchaseOrderDate"></div>
-		</div>		
+		</div>
 	</div>
-	
+
 	<div id="productsGrid" style="margin: 12px 0;"></div>
 
-	<p class="alert alert-warning"><strong>NOTE: </strong>Kindly verify all data entered are correct before processing the purchase order. Take note that action cannot be undone - 
+	<p class="alert alert-warning"><strong>NOTE: </strong>Kindly verify all data entered are correct before processing the purchase order. Take note that action cannot be undone -
 		it means that modification of this purchase order is not possible once processed.</p>
-	{{ Form::token() }}	
-	{{ Form::button('Process P.O. &raquo;', array('id' => 'processPurchaseOrderBtn', 'class' => 'btn btn-primary')) }}	
-		
+	{{ Form::token() }}
+	{{ Form::button('Process P.O. &raquo;', array('id' => 'processPurchaseOrderBtn', 'class' => 'btn btn-primary')) }}
+
 </div>
 @stop
 
@@ -40,7 +40,7 @@ $(function() {
 	});
 	$('#purchaseOrderDate').jqxDateTimeInput({ formatString: 'yyyy-MM-dd' });
 
-	var url = "{{ URL::route('products-json') }}";
+	var url = "{{ url('products/json') }}";
 	var source = {
 		datatype: "json",
 		datafields: [
@@ -56,13 +56,13 @@ $(function() {
 
 	$('#productsGrid').jqxGrid({
 		autoHeight: true,
-		editable: true,	
+		editable: true,
 		selectionmode: 'multiplecellsadvanced',
 		source: dataAdapter,
 		columns: [
 			{ text: 'Code', datafield: 'code', editable: false },
 			{ text: 'Title', datafield: 'title', editable: false },
-			{ text: 'Price', datafield: 'price', cellsalign: 'right', cellsformat: 'd2', columntype: 'numberinput', width: '75px', 
+			{ text: 'Price', datafield: 'price', cellsalign: 'right', cellsformat: 'd2', columntype: 'numberinput', width: '75px',
 				validation: function(cell, value) {
 					if(value<=0) {
 						return { result: false, message: "Price must be greater than 0." };
@@ -73,7 +73,7 @@ $(function() {
 					editor.jqxNumberInput({ decimalDigits: 2, digits: 5 });
 				}
 			},
-			{ text: 'Quantity', datafield: 'quantity', cellsalign: 'right', cellsformat: 'd', columntype: 'numberinput', width: '75px', aggregates: ['sum'], 
+			{ text: 'Quantity', datafield: 'quantity', cellsalign: 'right', cellsformat: 'd', columntype: 'numberinput', width: '75px', aggregates: ['sum'],
 				validation: function(cell, value) {
 					if(value<0) {
 						return { result: false, message: "Quantity must be greater than or equal to 0." };
@@ -85,10 +85,10 @@ $(function() {
 				}
 			},
 			{ text: 'Amount', datafield: 'amount', cellsalign: 'right', cellsformat: 'd2', editable: false, width: '100px', aggregates: ['sum'] }
-		],		
+		],
 		showaggregates: true,
 		showstatusbar: true,
-		width: '100%',		
+		width: '100%',
 	});
 	$('#productsGrid').jqxGrid('focus');
 	$('#productsGrid').on('cellendedit', function(event) {
@@ -103,7 +103,7 @@ $(function() {
 			if(args.datafield == 'price') {
 				price = newValue;
 				var val = $('#productsGrid').jqxGrid('getcell', row, 'quantity').value;
-				quantity = (val==null) ? 0: val;				
+				quantity = (val==null) ? 0: val;
 			} else if (args.datafield == 'quantity') {
 				price = $('#productsGrid').jqxGrid('getcell', row, 'price').value;
 				quantity = newValue;
@@ -117,7 +117,7 @@ $(function() {
 
 		var memberCode = '{{ $member->code }}';
 		var purchaseOrderDate = $('#purchaseOrderDate').val();
-		
+
 		var rows = $('#productsGrid').jqxGrid('getrows');
 		var purchaseOrderProducts = new Array();
 		for(i in rows) {
@@ -132,8 +132,8 @@ $(function() {
 			}
 		}
 
-		var url = '{{ url() }}/member/'+memberCode+'/purchase-order';		
-		$.post(url, { purchaseOrderDate : purchaseOrderDate, purchaseOrderProducts : purchaseOrderProducts, _token : _token }, function(data) {			
+		var url = "{{ url('member/'.$member->code.'/purchase-order') }}";
+		$.post(url, { purchaseOrderDate : purchaseOrderDate, purchaseOrderProducts : purchaseOrderProducts, _token : _token }, function(data) {
 			window.location.reload();
 		}).
 		done(function() {

@@ -9,6 +9,8 @@ class PurchaseOrder extends Model {
 
 	protected $primaryKey = 'code';
 
+	public $incrementing = false;
+
 	protected $fillable = array(
 		'code',
 		'purchase_order_date'

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Person;
 use App\Models\Member;
+use App\Models\PurchaseOrder;
+use App\Models\Payout;
 use Illuminate\Http\Request;
 use Redirect;
 use Response;
@@ -110,7 +112,7 @@ class MemberController extends Controller {
 
 	public function generateMemberCode() {
 		$a = rand(1, 9).''.rand(0, 9).''.rand(0, 9).''.rand(0,9);
-		$date = new DateTime();
+		$date = new \DateTime();
 		$b = substr($date->getTimestamp(), 6);
 		echo $a . '-' . $b;
 	}
@@ -179,10 +181,11 @@ class MemberController extends Controller {
 
 	public function purchaseOrder($memberCode) {
 		$member = Member::find($memberCode);
+
 		return view('members.purchase-order', array('member' => $member));
 	}
 
-	public function addPurchaseOrder($memberCode) {
+	public function addPurchaseOrder(Request $request, $memberCode) {
 		$member = Member::find($memberCode);
 		$purchaseOrderDate = $request->input('purchaseOrderDate');
 

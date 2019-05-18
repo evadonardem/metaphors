@@ -26,7 +26,7 @@ Register | Metaphors
 
 		<div class="row">
 			<div class="col-md-4">{{ Form::label('memberType', 'Membership Type') }}:</div>
-			<div class="col-md-8">			
+			<div class="col-md-8">
 				<div class="input-group">
 					<span class="input-group-addon">
 						{{ Form::radio('memberType', 'Distributor', array('checked' => true) ) }}
@@ -38,7 +38,7 @@ Register | Metaphors
 						{{ Form::radio('memberType', 'DistributionCenter' ) }}
 					</span>
 					<p class="form-control">Distribution Center</p>
-				</div>					
+				</div>
 			</div>
 		</div>
 
@@ -69,7 +69,7 @@ Register | Metaphors
 		<div class="row">
 			<div class="col-md-4">{{ Form::label('gender', 'Gender:') }}</div>
 			<div class="col-md-8"><div id="gender"></div></div>
-		</div>	
+		</div>
 	</div>
 
 	<div class="row">
@@ -101,8 +101,8 @@ $(function() {
 	}).val('');
 
 	$('#generateMemberCode').on('click', function() {
-		var url = "{{ URL::route('register-generate-member-code') }}";		
-		$.post(url, { }, function(data) {
+		var url = "{{ URL::route('register-generate-member-code') }}";
+		$.get(url, { }, function(data) {
 			$('#memberCode').val(data);
 		});
 	});
@@ -120,7 +120,7 @@ $(function() {
 		datatype: "json",
 		datafields: [
 			{ name: 'person_id' },
-			{ name: 'code' }			
+			{ name: 'code' }
 		],
 		id: 'person_id',
 		url: url
@@ -134,13 +134,13 @@ $(function() {
 				data[i] = {
 					'person_id' : record.person_id,
 					'code' : record.code,
-					'lastName' : record.person.lastName, 
+					'lastName' : record.person.lastName,
 					'firstName' : record.person.firstName,
 					'middleName' : record.person.middleName,
 					'gender' : record.person.gender
 				};
 			}
-			
+
 			var membersSource = {
 				datatype: "json",
 				datafields: [
@@ -154,17 +154,17 @@ $(function() {
 				id: 'person_id',
 				localdata: data
 			};
-			
+
 			var membersDataAdapter = new $.jqx.dataAdapter(membersSource);
 
 			$('#countMembers').html(records.length);
 			$('#membersGrid').jqxGrid({
-				autoHeight: true,				
+				autoHeight: true,
 				columns: [
-					{ text: 'Code', datafield: 'code', width: '90px' }, 
+					{ text: 'Code', datafield: 'code', width: '90px' },
 					{ text: 'Last Name', datafield: 'lastName' },
 					{ text: 'First Name', datafield: 'firstName' },
-					{ text: 'Middle Name', datafield: 'middleName' }, 
+					{ text: 'Middle Name', datafield: 'middleName' },
 					{ text: 'Gender', datafield: 'gender', width: '32px' }
 				],
 				filterable: true,
@@ -174,12 +174,14 @@ $(function() {
 				source: membersDataAdapter,
 				width: '100%'
 			});
-			
+
 			$('#membersGrid').on('rowselect', function(event) {
 				var args = event.args;
-				var row = $('#membersGrid').jqxGrid('getrowdata', args.rowindex);				
-				$('#sponsorCode').val(row['code']);
-				$('#sponsor').val(row['code'] + ' ' + row['lastName'] + ', ' + row['firstName'] + ' ' + row['middleName']);
+				var row = $('#membersGrid').jqxGrid('getrowdata', args.rowindex);
+				if(row) {
+					$('#sponsorCode').val(row['code']);
+					$('#sponsor').val(row['code'] + ' ' + row['lastName'] + ', ' + row['firstName'] + ' ' + row['middleName']);
+				}
 			});
 			$('#membersGrid').jqxGrid('selectrow', -1);
 
@@ -198,7 +200,7 @@ $(function() {
 
 	var rules = [
 		{ input: '#memberCode', message: 'Required!', action: 'blur', rule: 'required' },
-		{ input: '#memberCode', message: 'Already used!', action: 'blur,focus', 
+		{ input: '#memberCode', message: 'Already used!', action: 'blur,focus',
 			rule: function(input, commit) {
 				var state = false;
 				$.ajaxSetup({ async: false });
@@ -208,18 +210,18 @@ $(function() {
 					if(data) state = true;
 				});
 				return state;
-			} 
+			}
 		},
 		{ input: '#firstName', message: 'Required!', action: 'blur,focus', rule: 'required' },
 		{ input: '#firstName', message: 'Must be 2 to 20 characters!', action: 'blur,focus', rule: 'length=2,20' },
 		{ input: '#middleName', message: 'Required!', action: 'blur,focus', rule: 'required' },
 		{ input: '#lastName', message: 'Required!', action: 'blur,focus', rule: 'required' },
-		{ input: '#gender', message: 'Required!', action: 'blur,focus', 
+		{ input: '#gender', message: 'Required!', action: 'blur,focus',
 			rule: function(input, commit) {
-				return (new String($('#gender').val()).length>0) ? true : false;				
-			} 
+				return (new String($('#gender').val()).length>0) ? true : false;
+			}
 		}
-	];	
+	];
 
 	$('#registrationForm').jqxValidator({
 		hintType: 'label',
