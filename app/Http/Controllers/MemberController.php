@@ -6,6 +6,7 @@ use App\Models\Person;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Redirect;
+use Response;
 use Validator;
 
 class MemberController extends Controller {

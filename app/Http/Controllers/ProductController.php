@@ -18,76 +18,31 @@ class ProductController extends Controller {
 	}
 
 	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-		public function create()
-	{
-		//
-	}
-
-	/**
 	 * Store a newly created resource in storage.
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function store(Request $request)
 	{
 	    $code = 'MTPHRS'.rand(100000,999999);
-		$product = array(
-			'code' => $code,
-			'title' => Input::get('title'),
-			'description' => Input::get('description'),
-			'price' => Input::get('price')
-		);
-		Product::create($product);
+	    $product = array(
+	       'code' => $code,
+			     'title' => $request->input('title'),
+			     'description' => $request->input('description'),
+			     'price' => $request->input('price')
+	    	);
+		    
+		    Product::create($product);
+		    $product = Product::find($code);
+		    /*$image = Input::file('image')[0];
 
-        $product = Product::find($code);
+      $bannerImage = Image::make($image);
+      $bannerImage->fit(800, 450);
+      $bannerImage->save('images/products/'.$product->code.'.jpg');
 
-        $image = Input::file('image')[0];
-
-
-        $bannerImage = Image::make($image);
-        $bannerImage->fit(800, 450);
-        $bannerImage->save('images/products/'.$product->code.'.jpg');
-
-        $thumbnailImage = $bannerImage;
-        $thumbnailImage->fit(100);
- 	    $thumbnailImage->save('images/products/'.$product->code.'_thumb.jpg');
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
+      $thumbnailImage = $bannerImage;
+      $thumbnailImage->fit(100);
+      $thumbnailImage->save('images/products/'.$product->code.'_thumb.jpg');*/
 	}
 
 	/**
@@ -98,8 +53,8 @@ class ProductController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		$product = Product::find($id);
-		$product->delete();
+	   $product = Product::find($id);
+	   $product->delete();
 	}
 
 	public function productsJSON() {

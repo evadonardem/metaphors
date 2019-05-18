@@ -8,6 +8,8 @@ class Member extends Model {
 	protected $table = 'member';
 
 	protected $primaryKey = 'code';
+	
+	public $incrementing = false;
 
 	protected $fillable = array(
 		'code',
