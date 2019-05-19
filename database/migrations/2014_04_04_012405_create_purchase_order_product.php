@@ -20,7 +20,7 @@ class CreatePurchaseOrderProduct extends Migration {
 			$table->timestamps();
 			$table->primary(array('purchase_order_code', 'product_code'));
 			$table->foreign('purchase_order_code')->references('code')->on('purchase_order')->onDelete('cascade')->onUpdate('cascade');
-			$table->foreign('product_code')->references('code')->on('product')->onDelete('cascade')->onUpdate('cascade');
+			$table->foreign('product_code')->references('code')->on('product')->onDelete('restrict')->onUpdate('cascade');
 		});
 	}
 
